@@ -99,18 +99,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     private static final EntityDataAccessor<Boolean> DATA_CHARGING_STATE = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> KICKING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> FOLLOWING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
-    private static final Map<Pose, EntityDimensions> SIZE_BY_POSE = ImmutableMap.<Pose, EntityDimensions>builder()
-            .put(Pose.SLEEPING, SLEEPING_DIMENSIONS)
-            .put(Pose.FALL_FLYING, EntityDimensions.scalable(0.6F, 0.6F).withEyeHeight(0.4F))
-            .put(Pose.SWIMMING, EntityDimensions.scalable(0.6F, 0.6F).withEyeHeight(0.4F))
-            .put(Pose.SPIN_ATTACK, EntityDimensions.scalable(0.6F, 0.6F).withEyeHeight(0.4F))
-            .put(
-                    Pose.CROUCHING,
-                    EntityDimensions.scalable(0.6F, 1.5F)
-                            .withEyeHeight(1.27F)
-                            .withAttachments(EntityAttachments.builder().attach(EntityAttachment.VEHICLE, new Vec3(0.0, 0.6, 0.0)
-                            ))).put(Pose.DYING, EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(1.62F))
-            .build();
+    private static final Map<Pose, EntityDimensions> SIZE_BY_POSE = ImmutableMap.<Pose, EntityDimensions>builder().put(Pose.SLEEPING, SLEEPING_DIMENSIONS).put(Pose.FALL_FLYING, EntityDimensions.scalable(0.6F, 0.6F).withEyeHeight(0.4F)).put(Pose.SWIMMING, EntityDimensions.scalable(0.6F, 0.6F).withEyeHeight(0.4F)).put(Pose.SPIN_ATTACK, EntityDimensions.scalable(0.6F, 0.6F).withEyeHeight(0.4F)).put(Pose.CROUCHING, EntityDimensions.scalable(0.6F, 1.5F).withEyeHeight(1.27F).withAttachments(EntityAttachments.builder().attach(EntityAttachment.VEHICLE, new Vec3(0.0, 0.6, 0.0)))).put(Pose.DYING, EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(1.62F)).build();
     private static final UniformInt angerTime = TimeUtil.rangeOfSeconds(20, 39);
     private final GossipContainer gossips = new GossipContainer();
     public long lastGossipTime;
@@ -213,20 +202,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         super.readAdditionalSaveData(compound);
         if (compound.contains("Type", 99)) { // To accommodate guard variants in the previous updates
             int variantint = compound.getInt("Type");
-            if (variantint == 1)
-                compound.putString("Variant", "desert");
-            else if (variantint == 2)
-                compound.putString("Variant", "savanna");
-            else if (variantint == 3)
-                compound.putString("Variant", "swamp");
-            else if (variantint == 4)
-                compound.putString("Variant", "jungle");
-            else if (variantint == 5)
-                compound.putString("Variant", "taiga");
-            else if (variantint == 6)
-                compound.putString("Variant", "snow");
-            else if (variantint == 0)
-                compound.putString("Variant", "plains");
+            if (variantint == 1) compound.putString("Variant", "desert");
+            else if (variantint == 2) compound.putString("Variant", "savanna");
+            else if (variantint == 3) compound.putString("Variant", "swamp");
+            else if (variantint == 4) compound.putString("Variant", "jungle");
+            else if (variantint == 5) compound.putString("Variant", "taiga");
+            else if (variantint == 6) compound.putString("Variant", "snow");
+            else if (variantint == 0) compound.putString("Variant", "plains");
         }
         UUID uuid = compound.hasUUID("Owner") ? compound.getUUID("Owner") : null;
         if (uuid != null) {
@@ -261,10 +243,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             CompoundTag compoundnbt = listnbt.getCompound(i);
             int j = compoundnbt.getByte("Slot") & 255;
             ItemStack stack = ItemStack.parseOptional(this.registryAccess(), compoundnbt);
-            if (!stack.isEmpty())
-                this.guardInventory.setItem(j, stack);
-            else
-                listtag.add(new CompoundTag());
+            if (!stack.isEmpty()) this.guardInventory.setItem(j, stack);
+            else listtag.add(new CompoundTag());
         }
         if (compound.contains("ArmorItems", 9)) {
             ListTag armorItems = compound.getList("ArmorItems", 10);
@@ -283,8 +263,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     int handSlot = i == 0 ? 5 : 4;
                     if (!ItemStack.parseOptional(this.registryAccess(), handItems.getCompound(i)).isEmpty())
                         this.guardInventory.setItem(handSlot, ItemStack.parseOptional(this.registryAccess(), handItems.getCompound(i)));
-                    else
-                        listtag.add(new CompoundTag());
+                    else listtag.add(new CompoundTag());
                 }
                 if (!level().isClientSide) this.readPersistentAngerSaveData(level(), compound);
             }
@@ -645,8 +624,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.level().addFreshEntity(abstractarrowentity);
             this.damageGuardItem(1, EquipmentSlot.MAINHAND, hand);
         }
-        if (ModList.get().isLoaded("musketmod"))
-            ModCompat.shootGun(this);
+        if (ModList.get().isLoaded("musketmod")) ModCompat.shootGun(this);
     }
 
     @Override
@@ -654,9 +632,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         InteractionHand interactionhand = ProjectileUtil.getWeaponHoldingHand(p_32337_, item -> item instanceof CrossbowItem);
         ItemStack itemstack = p_32337_.getItemInHand(interactionhand);
         if (itemstack.getItem() instanceof CrossbowItem crossbowitem) {
-            crossbowitem.performShooting(
-                    p_32337_.level(), p_32337_, interactionhand, itemstack, p_32338_, 0.0F, null
-            );
+            crossbowitem.performShooting(p_32337_.level(), p_32337_, interactionhand, itemstack, p_32338_, 0.0F, null);
         }
 
         this.onCrossbowAttackPerformed();
@@ -1134,7 +1110,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             super.tick();
             LivingEntity attacker = guard.getTarget();
             if (attacker != null) {
-                this.guard.getLookControl().setLookAt(attacker.getX(), attacker.getY(), attacker.getZ());
+                this.guard.getLookControl().setLookAt(attacker);
+                this.guard.lookAt(attacker, 30.0F, 30.0F);
             }
             if (guard.isPatrolling()) {
                 guard.getNavigation().stop();
@@ -1174,8 +1151,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
 
         private boolean areOtherMobsComingThroughDoor(Guard pEntity) {
-            List<? extends PathfinderMob> nearbyEntityList = pEntity.level().getEntitiesOfClass(PathfinderMob.class,
-                    pEntity.getBoundingBox().inflate(4.0D));
+            List<? extends PathfinderMob> nearbyEntityList = pEntity.level().getEntitiesOfClass(PathfinderMob.class, pEntity.getBoundingBox().inflate(4.0D));
             if (!nearbyEntityList.isEmpty()) {
                 for (PathfinderMob mob : nearbyEntityList) {
                     if (mob.blockPosition().closerToCenterThan(pEntity.position(), 2.0D))
@@ -1313,8 +1289,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 for (LivingEntity mob : list) {
                     if (mob != null) {
                         if (mob.getLastHurtMob() instanceof Guard || mob instanceof Mob && ((Mob) mob).getTarget() instanceof Guard) {
-                            if (walkTimer < 20)
-                                this.walkTimer += 5;
+                            if (walkTimer < 20) this.walkTimer += 5;
                         }
                     }
                 }
@@ -1350,8 +1325,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static class FollowShieldGuards extends Goal {
-        private static final TargetingConditions NEARBY_GUARDS = TargetingConditions.forNonCombat().range(8.0D)
-                .ignoreLineOfSight();
+        private static final TargetingConditions NEARBY_GUARDS = TargetingConditions.forNonCombat().range(8.0D).ignoreLineOfSight();
         private final Guard taskOwner;
         private Guard guardtofollow;
         private double x;
@@ -1364,15 +1338,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canUse() {
-            List<? extends Guard> list = this.taskOwner.level().getEntitiesOfClass(this.taskOwner.getClass(),
-                    this.taskOwner.getBoundingBox().inflate(8.0D, 8.0D, 8.0D));
+            List<? extends Guard> list = this.taskOwner.level().getEntitiesOfClass(this.taskOwner.getClass(), this.taskOwner.getBoundingBox().inflate(8.0D, 8.0D, 8.0D));
             if (!list.isEmpty()) {
                 for (Guard guard : list) {
-                    if (!guard.isInvisible() && guard.getOffhandItem().canPerformAction(ItemAbilities.SHIELD_BLOCK) && guard.isBlocking()
-                            && this.taskOwner.level()
-                            .getNearbyEntities(Guard.class, NEARBY_GUARDS.range(3.0D), guard,
-                                    this.taskOwner.getBoundingBox().inflate(5.0D))
-                            .size() < 5) {
+                    if (!guard.isInvisible() && guard.getOffhandItem().canPerformAction(ItemAbilities.SHIELD_BLOCK) && guard.isBlocking() && this.taskOwner.level().getNearbyEntities(Guard.class, NEARBY_GUARDS.range(3.0D), guard, this.taskOwner.getBoundingBox().inflate(5.0D)).size() < 5) {
                         if (!(taskOwner.getMainHandItem().getItem() instanceof ProjectileWeaponItem)) {
                             this.guardtofollow = guard;
                             Vec3 vec3d = this.getPosition();
@@ -1495,10 +1464,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     this.mob.lookAt(livingentity, 30.0F, 30.0F);
                 }
                 if (this.mob.getRandom().nextInt(50) == 0) {
-                    if (this.mob.hasPose(Pose.STANDING))
-                        this.mob.setPose(Pose.CROUCHING);
-                    else
-                        this.mob.setPose(Pose.STANDING);
+                    if (this.mob.hasPose(Pose.STANDING)) this.mob.setPose(Pose.CROUCHING);
+                    else this.mob.setPose(Pose.STANDING);
                 }
                 boolean canSee2 = (d0 > (double) this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
                 if (canSee2) {
@@ -1595,11 +1562,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
 
         public enum CrossbowState {
-            UNCHARGED,
-            CHARGING,
-            CHARGED,
-            READY_TO_ATTACK,
-            FIND_NEW_POSITION
+            UNCHARGED, CHARGING, CHARGED, READY_TO_ATTACK, FIND_NEW_POSITION
         }
     }
 
@@ -1640,8 +1603,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canUse() {
-            return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ItemAbilities.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
-                    && !guard.getOffhandItem().getItem().equals(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("piglinproliferation", "buckler"))));
+            return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ItemAbilities.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0 && !guard.getOffhandItem().getItem().equals(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("piglinproliferation", "buckler"))));
         }
 
         @Override
@@ -1657,8 +1619,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public void stop() {
-            if (!GuardConfig.COMMON.GuardRaiseShield.get())
-                guard.stopUsingItem();
+            if (!GuardConfig.COMMON.GuardRaiseShield.get()) guard.stopUsingItem();
         }
 
         protected boolean raiseShield() {
@@ -1751,6 +1712,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public static class WalkBackToCheckPointGoal extends Goal {
         private final Guard guard;
         private final double speed;
+        private Vec3 lastPos;
+        private int stuckTicks = 0;
+        // @author hrmcngs
+        private static final int STUCK_THRESHOLD = 60; // 3 seconds at 20 ticks per second
 
         public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
             this.guard = guard;
@@ -1765,7 +1730,32 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canContinueToUse() {
-            return this.canUse() && this.guard.getNavigation().isInProgress();
+            if (!this.canUse()) {
+                return false;
+            }
+            // @author hrmcngs
+            // Check if navigation is still in progress
+            if (!this.guard.getNavigation().isInProgress()) {
+                return false;
+            }
+            // @author hrmcngs
+            // Detect if the guard is stuck
+            if (this.lastPos != null) {
+                double distanceTraveled = this.guard.position().distanceTo(this.lastPos);
+                if (distanceTraveled < 0.1) { // Less than 0.1 block moved
+                    this.stuckTicks++;
+                    if (this.stuckTicks >= STUCK_THRESHOLD) {
+                        // Guard is stuck, stop this goal and let other goals handle it
+                        // @author hrmcngs
+                        this.stuckTicks = 0;
+                        return false;
+                    }
+                } else {
+                    // @author hrmcngs
+                    this.stuckTicks = 0; // Reset if moving
+                }
+            }
+            return true;
         }
 
         @Override
@@ -1774,7 +1764,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             if (blockpos != null) {
                 Vec3 vector3d = Vec3.atCenterOf(blockpos);
                 this.guard.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, this.speed);
+                this.lastPos = this.guard.position();
+                this.stuckTicks = 0;
             }
+        }
+
+        @Override
+        public void tick() {
+            this.lastPos = this.guard.position();
         }
 
         @Override
