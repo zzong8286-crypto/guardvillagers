@@ -1712,10 +1712,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public static class WalkBackToCheckPointGoal extends Goal {
         private final Guard guard;
         private final double speed;
-        private Vec3 lastPos;
-        private int stuckTicks = 0;
-        // @author hrmcngs
-        private static final int STUCK_THRESHOLD = 60; // 3 seconds at 20 ticks per second
+        private long delayTime = 0L;
 
         public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
             this.guard = guard;
@@ -1725,53 +1722,41 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canUse() {
-            return guard.getTarget() == null && guard.getPatrolPos() != null && this.guard.blockPosition() != this.guard.getPatrolPos() && !guard.isFollowing() && guard.isPatrolling();
+            return guard.getTarget() == null && this.guard.getPatrolPos() != null && !this.guard.blockPosition().equals(this.guard.getPatrolPos()) && !guard.isFollowing() && guard.isPatrolling() && (guard.level().getGameTime() - delayTime) > 200L;
         }
 
         @Override
         public boolean canContinueToUse() {
-            if (!this.canUse()) {
-                return false;
-            }
             // @author hrmcngs
             // Check if navigation is still in progress
-            if (!this.guard.getNavigation().isInProgress()) {
+            if (!this.canUse() || !this.guard.getNavigation().isInProgress() || this.guard.getNavigation().isStuck() && this.guard.getNavigation().getPath().getEndNode().distanceTo(guard.blockPosition()) > 2) {
                 return false;
+            } else {
+                return true;
             }
-            // @author hrmcngs
-            // Detect if the guard is stuck
-            if (this.lastPos != null) {
-                double distanceTraveled = this.guard.position().distanceTo(this.lastPos);
-                if (distanceTraveled < 0.1) { // Less than 0.1 block moved
-                    this.stuckTicks++;
-                    if (this.stuckTicks >= STUCK_THRESHOLD) {
-                        // Guard is stuck, stop this goal and let other goals handle it
-                        // @author hrmcngs
-                        this.stuckTicks = 0;
-                        return false;
-                    }
-                } else {
-                    // @author hrmcngs
-                    this.stuckTicks = 0; // Reset if moving
-                }
-            }
-            return true;
         }
+
 
         @Override
         public void start() {
             BlockPos blockpos = this.guard.getPatrolPos();
             if (blockpos != null) {
-                Vec3 vector3d = Vec3.atCenterOf(blockpos);
-                this.guard.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, this.speed);
-                this.lastPos = this.guard.position();
-                this.stuckTicks = 0;
+                Path path = this.guard.getNavigation().createPath(blockpos, 0);
+                this.guard.getNavigation().moveTo(path, this.speed);
             }
         }
 
         @Override
         public void tick() {
-            this.lastPos = this.guard.position();
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach()) {
+                this.delayTime = this.guard.level().getGameTime();
+            }
+            this.guard.getNavigation().stop();
         }
 
         @Override
