@@ -1727,15 +1727,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canContinueToUse() {
-            // @author hrmcngs
-            // Check if navigation is still in progress
-            if (!this.canUse() || !this.guard.getNavigation().isInProgress() || this.guard.getNavigation().isStuck() && this.guard.getNavigation().getPath().getEndNode().distanceTo(guard.blockPosition()) > 2) {
-                return false;
-            } else {
-                return true;
-            }
+            return this.canUse() && this.guard.getNavigation().isInProgress() && (!this.guard.getNavigation().isStuck() || ((this.guard.getNavigation().getPath() != null && !(this.guard.getNavigation().getPath().getEndNode().distanceTo(guard.blockPosition()) > 2))));
         }
-
 
         @Override
         public void start() {
@@ -1747,15 +1740,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
 
         @Override
-        public void tick() {
-        }
-
-        @Override
         public void stop() {
-            super.stop();
-            if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach()) {
+            if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach())
                 this.delayTime = this.guard.level().getGameTime();
-            }
             this.guard.getNavigation().stop();
         }
 
