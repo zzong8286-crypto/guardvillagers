@@ -29,6 +29,8 @@ import tallestegg.guardvillagers.loot_tables.GuardLootTables;
 import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
+import tallestegg.guardvillagers.client.GuardClientEvents;
+import tallestegg.guardvillagers.client.ClientEvents;
 
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
@@ -51,6 +53,9 @@ public class GuardVillagers {
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::register);
+        modEventBus.addListener(GuardClientEvents::layerDefinitions);
+        modEventBus.addListener(GuardClientEvents::entityRenderers);
+        modEventBus.addListener(ClientEvents::registerLayerDefinitions);
     }
 
 
@@ -97,8 +102,8 @@ public class GuardVillagers {
     }
 
     private void serverStart(final ServerAboutToStartEvent event) {
-        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registries.TEMPLATE_POOL).orElseThrow();
-        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registries.PROCESSOR_LIST).orElseThrow();
+        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().lookupOrThrow(Registries.TEMPLATE_POOL);
+        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().lookupOrThrow(Registries.PROCESSOR_LIST);
     }
 
 
