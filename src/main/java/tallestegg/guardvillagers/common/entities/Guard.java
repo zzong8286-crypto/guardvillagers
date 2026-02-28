@@ -1831,7 +1831,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             return this.canUse() && this.guard.getNavigation().isInProgress() && stop;
         }
 
-
         @Override
         public void start() {
             if (ticksRan > 200)
