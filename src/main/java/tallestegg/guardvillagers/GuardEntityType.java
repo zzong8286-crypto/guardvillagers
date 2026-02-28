@@ -9,9 +9,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tallestegg.guardvillagers.common.entities.Guard;
 
-//@Mod.EventBusSubscriber(modid = GuardVillagers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class GuardEntityType {
-    // 클래스 상단에 추가
     private static final ResourceKey<EntityType<?>> GUARD_KEY = ResourceKey.create(
             Registries.ENTITY_TYPE,
             ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "guard")

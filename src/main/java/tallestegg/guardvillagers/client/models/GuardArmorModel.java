@@ -19,7 +19,6 @@ public class GuardArmorModel extends HumanoidModel<GuardRenderState> {
         MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(1.0F), 0.0F);
         PartDefinition partdefinition = meshdefinition.getRoot();
 
-        // 가드 머리(8x10) 높이에 맞춰 head/hat 위치 및 높이 조정
         partdefinition.addOrReplaceChild(
                 "head",
                 CubeListBuilder.create()
@@ -43,7 +42,6 @@ public class GuardArmorModel extends HumanoidModel<GuardRenderState> {
         MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.5F), 0.0F);
         PartDefinition partdefinition = meshdefinition.getRoot();
 
-        // inner(레깅스용)도 head/hat 오프셋을 맞춰두면 안전함
         partdefinition.addOrReplaceChild(
                 "head",
                 CubeListBuilder.create()

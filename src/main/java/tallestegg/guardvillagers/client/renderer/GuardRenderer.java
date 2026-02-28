@@ -114,7 +114,6 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
         state.offHandUseAnimation = off.getUseAnimation();
         state.variant = entity.getVariant();
 
-        // HumanoidRenderState 쪽 팔 포즈는 모델이 아니라 state에 넣어야 함
         HumanoidModel.ArmPose mainPose = this.getArmPose(entity, main, off, InteractionHand.MAIN_HAND);
         HumanoidModel.ArmPose offPose = this.getArmPose(entity, main, off, InteractionHand.OFF_HAND);
 

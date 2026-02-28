@@ -136,7 +136,6 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
         this.hat.visible = this.head.visible;
         this.hat.copyFrom(this.head);
 
-        // copyFrom이 미묘하게 안 먹는 경우 대비: 좌표/회전까지 직접 동기화
         this.hat.x = this.head.x;
         this.hat.y = this.head.y;
         this.hat.z = this.head.z;
@@ -146,7 +145,6 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
     }
 
     private void applyArmPoses(GuardRenderState state) {
-        // Bow 포즈: 한쪽만 BOW_AND_ARROW여도 양팔 포즈를 강제로 맞춤
         if (state.rightArmPose == HumanoidModel.ArmPose.BOW_AND_ARROW
                 || state.leftArmPose == HumanoidModel.ArmPose.BOW_AND_ARROW) {
 

@@ -7,9 +7,9 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 
-public class MyArmorModel<T extends HumanoidRenderState> extends HumanoidModel<T> {
+public class GuardArmorRenderModel<T extends HumanoidRenderState> extends HumanoidModel<T> {
 
-    public MyArmorModel(ModelPart root) {
+    public GuardArmorRenderModel(ModelPart root) {
         super(root);
     }
 

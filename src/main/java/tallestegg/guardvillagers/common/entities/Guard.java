@@ -76,6 +76,7 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardVillagers;
@@ -143,15 +144,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        //몹 감지 범위가 너무 넓음 48 > 24 축소
-        //return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, GuardConfig.STARTUP.healthModifier.get()).add(Attributes.MOVEMENT_SPEED, GuardConfig.STARTUP.speedModifier.get()).add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, GuardConfig.STARTUP.followRangeModifier.get());
-        double followRange = Math.min(24.0D, GuardConfig.STARTUP.followRangeModifier.get());
-
-        return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, GuardConfig.STARTUP.healthModifier.get())
-                .add(Attributes.MOVEMENT_SPEED, GuardConfig.STARTUP.speedModifier.get())
-                .add(Attributes.ATTACK_DAMAGE, 1.0D)
-                .add(Attributes.FOLLOW_RANGE, followRange);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, GuardConfig.STARTUP.healthModifier.get()).add(Attributes.MOVEMENT_SPEED, GuardConfig.STARTUP.speedModifier.get()).add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, GuardConfig.STARTUP.followRangeModifier.get());
     }
 
     @SuppressWarnings({"deprecation", "OverrideOnly"})
@@ -648,7 +641,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new GuardLookAtAndStopMovingWhenBeingTheInteractionTarget(this));
-        /* 몹 감지 시 물에 뜨지 않음. 항상 물로 뜨는것으로 수정
         if (GuardConfig.COMMON.guardSinkToFightUnderWater.get()) {
             this.goalSelector.addGoal(10, new FloatGoal(this) {
                 @Override
@@ -659,8 +651,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         } else {
             this.goalSelector.addGoal(10, new FloatGoal(this));
         }
-         */
-        this.goalSelector.addGoal(10, new FloatGoal(this));
         this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Guard.class, IronGolem.class)).setAlertOthers());
         this.targetSelector.addGoal(3, new HeroHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
@@ -890,7 +880,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         this.interacting = true;
         player.nextContainerCounter();
-        player.connection.send(new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId()));
+
+        PacketDistributor.sendToPlayer(
+                player,
+                new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId())
+        );
+
         player.containerMenu = new GuardContainer(player.containerCounter, player.getInventory(), this.guardInventory, this);
         player.initMenu(player.containerMenu);
         NeoForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));

@@ -46,7 +46,6 @@ public class GuardSteveModel extends HumanoidModel<GuardRenderState> {
         this.hat.visible = this.head.visible;
         this.hat.copyFrom(this.head);
 
-        // copyFrom이 미묘하게 안 먹는 경우 대비: 좌표/회전까지 직접 동기화
         this.hat.x = this.head.x;
         this.hat.y = this.head.y;
         this.hat.z = this.head.z;

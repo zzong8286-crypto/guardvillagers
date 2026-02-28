@@ -22,7 +22,6 @@ public abstract class VillagerModelMixin {
 
     @Inject(method = "setupAnim", at = @At("HEAD"))
     private void guardvillagers$captureBabyState(VillagerRenderState state, CallbackInfo ci) {
-        // 1.21.3 렌더 상태 기반
         this.guardvillagers$isBaby = state.isBaby;
     }
 
@@ -30,7 +29,6 @@ public abstract class VillagerModelMixin {
     private void guardvillagers$applyBigHeadScale(VillagerRenderState state, CallbackInfo ci) {
         ModelPart head = this.getHead();
 
-        // 매 프레임 기본값/확대값 재설정
         float scale = (this.guardvillagers$isBaby && GuardConfig.CLIENT.bigHeadBabyVillager.get()) ? 1.5F : 1.0F;
 
         head.xScale = scale;
